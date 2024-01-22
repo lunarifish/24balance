@@ -857,30 +857,30 @@
               <FileType>1</FileType>
               <FilePath>..\bsp\boards\bsp_buzzer.c</FilePath>
             </File>
-            <File>
-              <FileName>bsp_rc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp\boards\bsp_rc.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>application</GroupName>
           <Files>
             <File>
-              <FileName>INS_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\INS_task.c</FilePath>
-            </File>
-            <File>
               <FileName>app_can.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\app_can.c</FilePath>
             </File>
             <File>
-              <FileName>chassis_task.c</FileName>
+              <FileName>app_chassis_task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\application\chassis_task.c</FilePath>
+              <FilePath>..\application\app_chassis_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_debug_plotter_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\app_debug_plotter_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_ins_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\app_ins_task.c</FilePath>
             </File>
           </Files>
         </Group>

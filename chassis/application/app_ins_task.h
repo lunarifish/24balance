@@ -21,8 +21,8 @@
   ****************************(C) COPYRIGHT 2019 DJI****************************
   */
 
-#ifndef INS_Task_H
-#define INS_Task_H
+#ifndef BALANCE_CHASSIS_INS_TASK_H
+#define BALANCE_CHASSIS_INS_TASK_H
 
 #include "struct_typedef.h"
 
@@ -44,7 +44,6 @@
 
 //ist83100ԭʼ�����ڻ�����buf��λ��
 #define IST8310_RX_BUF_DATA_OFFSET 16
-
 
 #define TEMPERATURE_PID_KP 1600.0f //�¶ȿ���PID��kp
 #define TEMPERATURE_PID_KI 0.2f    //�¶ȿ���PID��ki
@@ -74,17 +73,13 @@
 #define INS_MAG_Y_ADDRESS_OFFSET 1
 #define INS_MAG_Z_ADDRESS_OFFSET 2
 
+
 /**
   * @brief          imu task, init bmi088, ist8310, calculate the euler angle
   * @param[in]      pvParameters: NULL
   * @retval         none
   */
-/**
-  * @brief          imu����, ��ʼ�� bmi088, ist8310, ����ŷ����
-  * @param[in]      pvParameters: NULL
-  * @retval         none
-  */
-extern void INS_task(void const *pvParameters);
+void INS_task(void const *pvParameters);
 
 /**
   * @brief          calculate gyro zero drift
@@ -93,14 +88,7 @@ extern void INS_task(void const *pvParameters);
   * @param[out]     time_count: time, when call gyro_offset_calc 
   * @retval         none
   */
-/**
-  * @brief          У׼������
-  * @param[out]     �����ǵı������ӣ�1.0fΪĬ��ֵ�����޸�
-  * @param[out]     �����ǵ���Ư���ɼ������ǵľ�ֹ�������Ϊoffset
-  * @param[out]     �����ǵ�ʱ�̣�ÿ����gyro_offset���û��1,
-  * @retval         none
-  */
-extern void INS_cali_gyro(fp32 cali_scale[3], fp32 cali_offset[3], uint16_t *time_count);
+void INS_cali_gyro(fp32 cali_scale[3], fp32 cali_offset[3], uint16_t *time_count);
 
 /**
   * @brief          get gyro zero drift from flash
@@ -108,75 +96,6 @@ extern void INS_cali_gyro(fp32 cali_scale[3], fp32 cali_offset[3], uint16_t *tim
   * @param[in]      cali_offset:zero drift, 
   * @retval         none
   */
-/**
-  * @brief          У׼���������ã�����flash���������ط�����У׼ֵ
-  * @param[in]      �����ǵı������ӣ�1.0fΪĬ��ֵ�����޸�
-  * @param[in]      �����ǵ���Ư
-  * @retval         none
-  */
-extern void INS_set_cali_gyro(fp32 cali_scale[3], fp32 cali_offset[3]);
-
-/**
-  * @brief          get the quat
-  * @param[in]      none
-  * @retval         the point of INS_quat
-  */
-/**
-  * @brief          ��ȡ��Ԫ��
-  * @param[in]      none
-  * @retval         INS_quat��ָ��
-  */
-extern const fp32 *get_INS_quat_point(void);
-
-
-/**
-  * @brief          get the euler angle, 0:yaw, 1:pitch, 2:roll unit rad
-  * @param[in]      none
-  * @retval         the point of INS_angle
-  */
-/**
-  * @brief          ��ȡŷ����, 0:yaw, 1:pitch, 2:roll ��λ rad
-  * @param[in]      none
-  * @retval         INS_angle��ָ��
-  */
-extern const fp32 *get_INS_angle_point(void);
-
-
-/**
-  * @brief          get the rotation speed, 0:x-axis, 1:y-axis, 2:roll-axis,unit rad/s
-  * @param[in]      none
-  * @retval         the point of INS_gyro
-  */
-/**
-  * @brief          ��ȡ���ٶ�,0:x��, 1:y��, 2:roll�� ��λ rad/s
-  * @param[in]      none
-  * @retval         INS_gyro��ָ��
-  */
-extern const fp32 *get_gyro_data_point(void);
-
-
-/**
-  * @brief          get aceel, 0:x-axis, 1:y-axis, 2:roll-axis unit m/s2
-  * @param[in]      none
-  * @retval         the point of INS_gyro
-  */
-/**
-  * @brief          ��ȡ���ٶ�,0:x��, 1:y��, 2:roll�� ��λ m/s2
-  * @param[in]      none
-  * @retval         INS_gyro��ָ��
-  */
-extern const fp32 *get_accel_data_point(void);
-
-/**
-  * @brief          get mag, 0:x-axis, 1:y-axis, 2:roll-axis unit ut
-  * @param[in]      none
-  * @retval         the point of INS_mag
-  */
-/**
-  * @brief          ��ȡ���ٶ�,0:x��, 1:y��, 2:roll�� ��λ ut
-  * @param[in]      none
-  * @retval         INS_mag��ָ��
-  */
-extern const fp32 *get_mag_data_point(void);
+void INS_set_cali_gyro(fp32 cali_scale[3], fp32 cali_offset[3]);
 
 #endif

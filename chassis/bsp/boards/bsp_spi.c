@@ -1,11 +1,15 @@
+
 #include "bsp_spi.h"
+
 #include "main.h"
+
 
 extern SPI_HandleTypeDef hspi1;
 extern DMA_HandleTypeDef hdma_spi1_rx;
 extern DMA_HandleTypeDef hdma_spi1_tx;
 
-void SPI1_DMA_init(uint32_t tx_buf, uint32_t rx_buf, uint16_t num) {
+
+void spi1DMAInit(uint32_t tx_buf, uint32_t rx_buf, uint16_t num) {
     SET_BIT(hspi1.Instance->CR2, SPI_CR2_TXDMAEN);
     SET_BIT(hspi1.Instance->CR2, SPI_CR2_RXDMAEN);
 
@@ -51,11 +55,10 @@ void SPI1_DMA_init(uint32_t tx_buf, uint32_t rx_buf, uint16_t num) {
     //data length
     //���ݳ���
     __HAL_DMA_SET_COUNTER(&hdma_spi1_tx, num);
-
-
 }
 
-void SPI1_DMA_enable(uint32_t tx_buf, uint32_t rx_buf, uint16_t ndtr) {
+
+void spi1DMAEnable(uint32_t tx_buf, uint32_t rx_buf, uint16_t ndtr) {
     //disable DMA
     //ʧЧDMA
     __HAL_DMA_DISABLE(&hdma_spi1_rx);
@@ -92,7 +95,3 @@ void SPI1_DMA_enable(uint32_t tx_buf, uint32_t rx_buf, uint16_t ndtr) {
     __HAL_DMA_ENABLE(&hdma_spi1_rx);
     __HAL_DMA_ENABLE(&hdma_spi1_tx);
 }
-
-
-
-

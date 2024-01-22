@@ -1,19 +1,3 @@
-/**
-  ****************************(C) COPYRIGHT 2019 DJI****************************
-  * @file       pid.c/h
-  * @brief      pidʵ�ֺ�����������ʼ����PID���㺯����
-  * @note       
-  * @history
-  *  Version    Date            Author          Modification
-  *  V1.0.0     Dec-26-2018     RM              1. ���
-  *
-  @verbatim
-  ==============================================================================
-
-  ==============================================================================
-  @endverbatim
-  ****************************(C) COPYRIGHT 2019 DJI****************************
-  */
 
 #include "pid.h"
 #include "main.h"
@@ -40,17 +24,7 @@
   * @param[in]      max_iout: pid max iout
   * @retval         none
   */
-/**
-  * @brief          pid struct data init
-  * @param[out]     pid: PID�ṹ����ָ��
-  * @param[in]      mode: PID_POSITION:��ͨPID
-  *                 PID_DELTA: ���PID
-  * @param[in]      PID: 0: kp, 1: ki, 2:kd
-  * @param[in]      max_out: pid������
-  * @param[in]      max_iout: pid���������
-  * @retval         none
-  */
-void PID_init(pid_type_def *pid, uint8_t mode, const fp32 PID[3], fp32 max_out, fp32 max_iout) {
+void PID_init(pid_t *pid, uint8_t mode, const fp32 PID[3], fp32 max_out, fp32 max_iout) {
     if (pid == NULL || PID == NULL) {
         return;
     }
@@ -64,6 +38,17 @@ void PID_init(pid_type_def *pid, uint8_t mode, const fp32 PID[3], fp32 max_out, 
     pid->error[0] = pid->error[1] = pid->error[2] = pid->Pout = pid->Iout = pid->Dout = pid->out = 0.0f;
 }
 
+void handleRingPID(pid_t *pid, fp32 cycle) {
+  if (pid == NULL)
+    return;
+
+  if (pid->error[0] > (cycle / 2)) {
+    pid->error[0] -= cycle;
+  } else if (pid->error[0] < (-cycle / 2)) {
+    pid->error[0] += cycle;
+  }
+}
+
 /**
   * @brief          pid calculate 
   * @param[out]     pid: PID struct data point
@@ -71,20 +56,16 @@ void PID_init(pid_type_def *pid, uint8_t mode, const fp32 PID[3], fp32 max_out, 
   * @param[in]      set: set point
   * @retval         pid out
   */
-/**
-  * @brief          pid����
-  * @param[out]     pid: PID�ṹ����ָ��
-  * @param[in]      ref: ��������
-  * @param[in]      set: �趨ֵ
-  * @retval         pid���
-  */
-fp32 PID_calc(pid_type_def *pid, fp32 ref, fp32 set) {
+fp32 PID_calc(pid_t *pid, fp32 ref, fp32 set) {
     if (pid == NULL) {
         return 0.0f;
     }
 
     pid->error[2] = pid->error[1];
     pid->error[1] = pid->error[0];
+    if (pid->is_ring) {
+      handleRingPID(pid, pid->cycle);
+    }
     pid->set = set;
     pid->fdb = ref;
     pid->error[0] = set - ref;
@@ -116,12 +97,7 @@ fp32 PID_calc(pid_type_def *pid, fp32 ref, fp32 set) {
   * @param[out]     pid: PID struct data point
   * @retval         none
   */
-/**
-  * @brief          pid ������
-  * @param[out]     pid: PID�ṹ����ָ��
-  * @retval         none
-  */
-void PID_clear(pid_type_def *pid) {
+void PID_clear(pid_t *pid) {
     if (pid == NULL) {
         return;
     }

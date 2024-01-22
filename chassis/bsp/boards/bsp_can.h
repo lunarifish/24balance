@@ -1,7 +1,7 @@
 
-#ifndef ZERO_PROGRAM_BSP_CAN_H
-#define ZERO_PROGRAM_BSP_CAN_H
+#ifndef BALANCE_CHASSIS_BSP_CAN_H
+#define BALANCE_CHASSIS_BSP_CAN_H
 
-void can_filter_init(void);
+void canFilterInit(void);
 
-#endif //ZERO_PROGRAM_BSP_CAN_H
+#endif

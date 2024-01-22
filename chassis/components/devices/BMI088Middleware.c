@@ -19,7 +19,7 @@ void BMI088_delay_ms(uint16_t ms) {
 }
 
 void BMI088_delay_us(uint16_t us) {
-    delay_us(us);
+    delayUs(us);
 }
 
 

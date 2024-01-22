@@ -1,13 +1,12 @@
-#ifndef BSP_DELAY_H
-#define BSP_DELAY_H
+
+#ifndef BALANCE_CHASSIS_BSP_DELAY_H
+#define BALANCE_CHASSIS_BSP_DELAY_H
 
 #include "struct_typedef.h"
 
-extern void delay_init(void);
-
-extern void delay_us(uint16_t nus);
-
-extern void delay_ms(uint16_t nms);
+extern void delayInit(void);
+extern void delayUs(uint16_t nus);
+extern void delayMs(uint16_t nms);
 
 #endif
 

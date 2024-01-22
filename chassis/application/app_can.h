@@ -1,9 +1,9 @@
 
-#ifndef ZERO_PROGRAM_APP_CAN_H
-#define ZERO_PROGRAM_APP_CAN_H
+#ifndef BALANCE_CHASSIS_APP_CAN_H
+#define BALANCE_CHASSIS_APP_CAN_H
 
-#define DEDICATED_CAN                (hcan1)
-#define SHARED_CAN                   (hcan2)
+#define DEDICATED_CAN_HANDLE         (hcan1)
+#define SHARED_CAN_HANDLE            (hcan2)
 
 // NOTE: chassis motors are all on CAN2
 #define CAN_CHASSIS_6020_ALL_ID_1234 (0x1ff)
@@ -41,11 +41,8 @@ typedef struct
 } RC_ctrl_t;
 
 void decodeCanMsg(uint8_t *buf, CAN_RxHeaderTypeDef header);
-
 void canCmdChassis6020(int16_t trim_l_throttle, int16_t trim_r_throttle);
-
 void canCmdChassis3508(int32_t l_throttle, int32_t r_throttle);
-
 void canCmdChassis(int16_t trim_l, int16_t trim_r, int16_t l, int16_t r);
 
 #endif

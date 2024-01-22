@@ -11,10 +11,9 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
     CAN_RxHeaderTypeDef rx_header;
     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx_header, can_rx_buf);
     decodeCanMsg(can_rx_buf, rx_header);
-    
 }
 
-void can_filter_init(void) {
+void canFilterInit(void) {
     CAN_FilterTypeDef can_filter_st;
     can_filter_st.FilterActivation = ENABLE;
     can_filter_st.FilterMode = CAN_FILTERMODE_IDMASK;

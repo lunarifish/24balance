@@ -104,9 +104,11 @@ int main(void)
   MX_CAN2_Init();
   MX_USART3_UART_Init();
   MX_TIM4_Init();
+  MX_USART6_UART_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-    delay_init();
-    can_filter_init();
+    delayInit();
+    canFilterInit();
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

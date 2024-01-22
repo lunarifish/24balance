@@ -21,23 +21,21 @@
   ****************************(C) COPYRIGHT 2019 DJI****************************
   */
 
-#include "INS_task.h"
+#include "app_ins_task.h"
 
-#include "main.h"
-
+#include <math.h>
 #include "cmsis_os.h"
 
+#include "main.h"
 #include "bsp_imu_pwm.h"
 #include "bsp_spi.h"
 #include "bmi088driver.h"
 #include "ist8310driver.h"
 #include "pid.h"
-
 #include "MahonyAHRS.h"
-#include "math.h"
 
 
-#define IMU_temp_PWM(pwm)  imu_pwm_set(pwm)                    //pwm����
+
 
 
 /**
@@ -98,7 +96,7 @@ ist8310_real_data_t ist8310_real_data;
 
 static uint8_t first_temperate;
 static const fp32 imu_temp_PID[3] = {TEMPERATURE_PID_KP, TEMPERATURE_PID_KI, TEMPERATURE_PID_KD};
-static pid_type_def imu_temp_pid;
+static pid_t imu_temp_pid;
 
 
 fp32 INS_quat[4] = {0.0f, 0.0f, 0.0f, 0.0f};
@@ -107,7 +105,7 @@ fp32 INS_quat[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 // [1]   L <- roll  -> R 
 // [2]   L <- pitch -> H
 fp32 INS_angle[3] = {0.0f, 0.0f, 0.0f};      //euler angle, unit rad.ŷ���� ��λ rad
-
+fp32 fake_mag[3] = {0.f, 0.f, 0.f};
 
 
 /**
@@ -150,7 +148,7 @@ void INS_task(void const *pvParameters) {
     }
 
 
-    SPI1_DMA_init((uint32_t) gyro_dma_tx_buf, (uint32_t) gyro_dma_rx_buf, SPI_DMA_GYRO_LENGHT);
+    spi1DMAInit((uint32_t) gyro_dma_tx_buf, (uint32_t) gyro_dma_rx_buf, SPI_DMA_GYRO_LENGHT);
 
     imu_start_dma_flag = 1;
 
@@ -180,11 +178,11 @@ void INS_task(void const *pvParameters) {
         }
 
 
-        AHRS_update(INS_quat, 0.001f, bmi088_real_data.gyro, bmi088_real_data.accel, ist8310_real_data.mag);
+        AHRS_update(INS_quat, 0.001f, bmi088_real_data.gyro, bmi088_real_data.accel, fake_mag);
         get_angle(INS_quat, INS_angle + INS_YAW_ADDRESS_OFFSET, INS_angle + INS_PITCH_ADDRESS_OFFSET,
                   INS_angle + INS_ROLL_ADDRESS_OFFSET);
 
-        // the board is mounted 90 deg flipped, so we need to divide the pitch by PI/2
+        // the board is mounted vertically, so divide pitch value by 90 degrees
         INS_angle[2] -= (PI / 2.0f);
     }
 }
@@ -194,7 +192,6 @@ void AHRS_init(fp32 quat[4], fp32 accel[3], fp32 mag[3]) {
     quat[1] = 0.0f;
     quat[2] = 0.0f;
     quat[3] = 0.0f;
-
 }
 
 void AHRS_update(fp32 quat[4], fp32 time, fp32 gyro[3], fp32 accel[3], fp32 mag[3]) {
@@ -226,7 +223,7 @@ static void imu_temp_control(fp32 temp) {
             imu_temp_pid.out = 0.0f;
         }
         tempPWM = (uint16_t) imu_temp_pid.out;
-        IMU_temp_PWM(tempPWM);
+        imuSetPWM(tempPWM);
     } else {
         //��û�дﵽ���õ��¶ȣ�һֱ����ʼ���
         //in beginning, max power
@@ -240,7 +237,7 @@ static void imu_temp_control(fp32 temp) {
             }
         }
 
-        IMU_temp_PWM(MPU6500_TEMP_PWM_MAX - 1);
+        imuSetPWM(MPU6500_TEMP_PWM_MAX - 1);
     }
 }
 
@@ -301,7 +298,7 @@ static void imu_cmd_spi_dma(void) {
         gyro_update_flag |= (1 << IMU_SPI_SHFITS);
 
         HAL_GPIO_WritePin(CS1_GYRO_GPIO_Port, CS1_GYRO_Pin, GPIO_PIN_RESET);
-        SPI1_DMA_enable((uint32_t) gyro_dma_tx_buf, (uint32_t) gyro_dma_rx_buf, SPI_DMA_GYRO_LENGHT);
+        spi1DMAEnable((uint32_t) gyro_dma_tx_buf, (uint32_t) gyro_dma_rx_buf, SPI_DMA_GYRO_LENGHT);
         taskEXIT_CRITICAL_FROM_ISR(uxSavedInterruptStatus);
         return;
     }
@@ -313,7 +310,7 @@ static void imu_cmd_spi_dma(void) {
         accel_update_flag |= (1 << IMU_SPI_SHFITS);
 
         HAL_GPIO_WritePin(CS1_ACCEL_GPIO_Port, CS1_ACCEL_Pin, GPIO_PIN_RESET);
-        SPI1_DMA_enable((uint32_t) accel_dma_tx_buf, (uint32_t) accel_dma_rx_buf, SPI_DMA_ACCEL_LENGHT);
+        spi1DMAEnable((uint32_t) accel_dma_tx_buf, (uint32_t) accel_dma_rx_buf, SPI_DMA_ACCEL_LENGHT);
         taskEXIT_CRITICAL_FROM_ISR(uxSavedInterruptStatus);
         return;
     }
@@ -326,7 +323,7 @@ static void imu_cmd_spi_dma(void) {
         accel_temp_update_flag |= (1 << IMU_SPI_SHFITS);
 
         HAL_GPIO_WritePin(CS1_ACCEL_GPIO_Port, CS1_ACCEL_Pin, GPIO_PIN_RESET);
-        SPI1_DMA_enable((uint32_t) accel_temp_dma_tx_buf, (uint32_t) accel_temp_dma_rx_buf, SPI_DMA_ACCEL_TEMP_LENGHT);
+        spi1DMAEnable((uint32_t) accel_temp_dma_tx_buf, (uint32_t) accel_temp_dma_rx_buf, SPI_DMA_ACCEL_TEMP_LENGHT);
         taskEXIT_CRITICAL_FROM_ISR(uxSavedInterruptStatus);
         return;
     }

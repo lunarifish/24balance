@@ -27,16 +27,16 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "INS_task.h"
-#include "chassis_task.h"
+#include "app_ins_task.h"
+#include "app_chassis_task.h"
+#include "app_debug_plotter_task.h"
+
 
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
-osThreadId imuTaskHandle;
-osThreadId chassisTaskHandle;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -52,6 +52,10 @@ osThreadId chassisTaskHandle;
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 
+osThreadId imu_task_handle;
+osThreadId chassis_task_handle;
+osThreadId debug_plotter_task_handle;
+
 /* USER CODE END Variables */
 osThreadId testHandle;
 
@@ -59,6 +63,8 @@ osThreadId testHandle;
 /* USER CODE BEGIN FunctionPrototypes */
 
 /* USER CODE END FunctionPrototypes */
+
+void test_task(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -122,14 +128,21 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of test */
+  osThreadDef(test, test_task, osPriorityNormal, 0, 128);
+  testHandle = osThreadCreate(osThread(test), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
     /* add threads, ... */
     osThreadDef(imuTask, INS_task, osPriorityRealtime, 0, 1024);
-    imuTaskHandle = osThreadCreate(osThread(imuTask), NULL);
+    imu_task_handle = osThreadCreate(osThread(imuTask), NULL);
 
     osThreadDef(chassisTask, chassisTask, osPriorityHigh, 0, 1024);
-    chassisTaskHandle = osThreadCreate(osThread(chassisTask), NULL);
+    chassis_task_handle = osThreadCreate(osThread(chassisTask), NULL);
+
+#ifdef USE_DEBUG_PLOTTER
+    osThreadDef(debugPlotterTask, debugPlotterTask, osPriorityNormal, 0, 1024);
+    debug_plotter_task_handle = osThreadCreate(osThread(debugPlotterTask), NULL);
+#endif
   /* USER CODE END RTOS_THREADS */
 
 }
